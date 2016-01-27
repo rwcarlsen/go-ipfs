@@ -172,6 +172,13 @@ func (pi *PeerInfo) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (pi *PeerInfo) Loggable() map[string]interface{} {
+	return map[string]interface{}{
+		"peerID": pi.ID.Pretty(),
+		"addrs":  pi.Addrs,
+	}
+}
+
 // IDSlice for sorting peers
 type IDSlice []ID
 
