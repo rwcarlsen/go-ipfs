@@ -89,7 +89,7 @@ func checkExists(t *testing.T, path string) {
 	}
 }
 
-func closeMount(mnt *fstest.Mount) {
+func closeMount(mnt *mountWrap) {
 	if err := recover(); err != nil {
 		log.Error("Recovered panic")
 		log.Error(err)
@@ -97,7 +97,18 @@ func closeMount(mnt *fstest.Mount) {
 	mnt.Close()
 }
 
-func setupIpnsTest(t *testing.T, node *core.IpfsNode) (*core.IpfsNode, *fstest.Mount) {
+type mountWrap struct {
+	*fstest.Mount
+	Fs *FileSystem
+}
+
+func (m *mountWrap) Close() error {
+	m.Fs.Destroy()
+	m.Mount.Close()
+	return nil
+}
+
+func setupIpnsTest(t *testing.T, node *core.IpfsNode) (*core.IpfsNode, *mountWrap) {
 	maybeSkipFuseTests(t)
 
 	var err error
@@ -130,7 +141,10 @@ func setupIpnsTest(t *testing.T, node *core.IpfsNode) (*core.IpfsNode, *fstest.M
 		t.Fatal(err)
 	}
 
-	return node, mnt
+	return node, &mountWrap{
+		Mount: mnt,
+		Fs:    fs,
+	}
 }
 
 func TestIpnsLocalLink(t *testing.T) {
