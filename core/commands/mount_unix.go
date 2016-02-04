@@ -63,7 +63,7 @@ You may have to create /ipfs and /ipns before using 'ipfs mount':
 > ipfs daemon &
 > ipfs mount
 
-EXAMPLE:
+Example:
 
 # setup
 > mkdir foo
